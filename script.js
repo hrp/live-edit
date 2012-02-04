@@ -1,32 +1,40 @@
 (function() {
-  var addIEPlaceholderText;
 
   $(document).ready(function() {
-    var container, containerId, grabText, script, store, style;
+    var bling, container, containerId, grabText, rules, script, store, style;
     script = document.createElement('script');
     script.src = 'http://ejohn.org/files/jsdiff.js';
     document.getElementsByTagName('head')[0].appendChild(script);
+    style = document.createElement('style');
+    rules = document.createTextNode('ins {background-color: #ced;} del {background-color: #ecd;}');
+    style.type = 'text/css';
+    style.appendChild(rules);
+    document.getElementsByTagName('head')[0].appendChild(style);
     container = 'iscream4icecream';
     containerId = '#' + container;
-    grabText = function() {
-      return $('body *').not($(containerId)).not($(containerId).find('*')).not($('script')).text();
+    grabText = function(obj) {
+      var clonedTree;
+      if (obj == null) obj = $('body');
+      clonedTree = obj.clone().find('script').remove().end();
+      return clonedTree.find(containerId).remove().end().text();
     };
     document.designMode = 'on';
     store = grabText();
-    style = 'position: absolute; top: 4px; right: 4px; width: 300px; background-color: #ddf;';
-    $('body').append('<div id="' + container + '" style="' + style + '"><div id="rockyroad" style="text-align: right;">:)</div><div id="icecreamcone" style="width: 300px;"></div></div>');
+    bling = 'position: absolute; top: 4px; right: 4px; width: 300px; background-color: #ddf; ins { color: green; }';
+    $('body').append('<div id="' + container + '" style="' + bling + '"><div id="rockyroad" style="text-align: right;">It\'s alive! :)</div><div id="icecreamcone" style="width: 300px;"></div></div>');
     $('#rockyroad').on('click', function(e) {
       return $('#icecreamcone').slideToggle();
     });
     return document.onkeyup = function(e) {
       var diff, newBody;
+      $('#icecreamcone').slideUp();
       newBody = grabText();
       diff = diffString(store, newBody);
       $(containerId + ' #icecreamcone').html(diff);
-      return console.log(store, newBody, diff);
+      if ($('#icecreamcone').find('ins, del').length > 0) {
+        return $('#rockyroad').css('backgroundColor', '#fdd');
+      }
     };
   });
-
-  addIEPlaceholderText = function() {};
 
 }).call(this);
